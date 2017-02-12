@@ -13,8 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    cspoint2d.cpp \
+    csline2d.cpp \
+    csshape2d.cpp \
+    cspoint3d.cpp \
+    csline3d.cpp \
+    csplane3d.cpp \
+    cscamera.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    cspoint2d.h \
+    csline2d.h \
+    csshape2d.h \
+    cspoint3d.h \
+    csline3d.h \
+    csplane3d.h \
+    cscamera.h
 
 FORMS    += mainwindow.ui
