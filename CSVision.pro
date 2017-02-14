@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     cspoint3d.cpp \
     csline3d.cpp \
     csplane3d.cpp \
-    cscamera.cpp
+    cscamera.cpp \
+    csscene3d.cpp
 
 HEADERS  += mainwindow.h \
     cspoint2d.h \
@@ -29,6 +30,7 @@ HEADERS  += mainwindow.h \
     cspoint3d.h \
     csline3d.h \
     csplane3d.h \
-    cscamera.h
+    cscamera.h \
+    csscene3d.h
 
 FORMS    += mainwindow.ui

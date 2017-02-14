@@ -18,5 +18,5 @@ CsPoint2D::CsPoint2D(bool polar, float ph, float dd){
     y = dd*sin(phi);
 }
 
-CsPoint2D::CsPoint2D() : OzPoint2d(0,0){}
+CsPoint2D::CsPoint2D() : CsPoint2D(0,0){}
 

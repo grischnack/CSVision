@@ -28,11 +28,11 @@ public:
     float angleOfView;
 
 
-    QList<OzPlane3d> planarraysoriginal;
-    QList<OzPlane3d> planarrays;
-    QList<OzPlane3d> parallelplanarraysoriginal;
-    QList<OzPlane3d> parallelplanarrays;
-    QList<OzLine3d> rays;
+    QList<CsPlane3D> planarRaysOriginal;
+    QList<CsPlane3D> planarRays;
+    QList<CsPlane3D> parallelPlanarRaysOriginal;
+    QList<CsPlane3D> parallelPlanarRays;
+    QList<CsLine3D> rays;
 };
 
 #endif // CSCAMERA_H

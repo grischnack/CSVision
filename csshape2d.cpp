@@ -12,7 +12,7 @@ CsShape2D::CsShape2D(uint sidenum, int siz, CsPoint2D cent)
     }
 }
 
-CsShape2d::CsShape2D() :
+CsShape2D::CsShape2D() :
     CsShape2D(4, 50, CsPoint2D(0,0)){
 
 }
@@ -20,8 +20,8 @@ CsShape2d::CsShape2D() :
 void CsShape2D::rotate(float increment){
 
     angle += increment;
-    for(int i = 0; i < borderlines.count(); i++){
-        borderlines[i].angle += increment;
+    for(int i = 0; i < borderLines.count(); i++){
+        borderLines[i].angle += increment;
 
     }
 }

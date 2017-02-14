@@ -25,5 +25,5 @@ void CsLine3D::yaw(float angle){
     direction = dir.rotatedVector(direction);
 
 }
-void OzLine3d::roll(float angle){
+void CsLine3D::roll(float angle){
 }

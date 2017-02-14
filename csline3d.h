@@ -8,7 +8,6 @@
 class CsLine3D
 {
 public:
-    CsLine3D(float thet, float ph, float ps, float dist, float len , CsPoint3D cent);
     CsLine3D(QVector3D dir, float dist, float len, CsPoint3D cent);
     CsLine3D();
 
@@ -16,9 +15,6 @@ public:
     void yaw(float angle);
     void roll(float angle);
 
-    float theta;
-    float phi;
-    float psi;
     float distance;
     float length;
 
@@ -30,7 +26,7 @@ public:
 
 
 inline uint qHash(const CsLine3D& key){
-    return (uint) abs(key.theta*key.phi*key.psi*key.distance*key.center.x* key.center.y *key.center.z);
+    return (uint) abs(key.direction.x()*key.direction.y()*key.direction.z()*key.distance*key.center.x* key.center.y *key.center.z);
 }
 
 inline bool operator< (const CsLine3D &l1, const CsLine3D &l2){
@@ -40,7 +36,7 @@ inline bool operator< (const CsLine3D &l1, const CsLine3D &l2){
 
 inline bool operator== (const CsLine3D &l1, const CsLine3D &l2){
     return (l1.distance == l2.distance)
-            && (l1.theta == l2.theta) && (l1.phi == l2.phi) && (l1.psi == l2.psi)
+            && (l1.direction == l2.direction)
             && (l1.center.x == l2.center.x)
             && (l1.center.y==l2.center.y)
             && (l1.center.z==l2.center.z);

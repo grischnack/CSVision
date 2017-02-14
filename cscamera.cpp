@@ -6,9 +6,8 @@ CsCamera::CsCamera()
 
 }
 
-CsCamera::OzCamera(CsPoint3D nodpoint, int widthinpixels) {
+CsCamera::CsCamera(CsPoint3D nodpoint, int widthinpixels) {
     nodalPoint = nodpoint;
-    line = OzLine3d(0, 0, 0, 0, 100, nodalPoint);
 
     for(int i = 0; i < widthinpixels; i++){
         float ang = (float)i/(float)widthinpixels;
@@ -18,7 +17,7 @@ CsCamera::OzCamera(CsPoint3D nodpoint, int widthinpixels) {
         int nuls[4] = {0,0,0,0};
 
         CsPoint3D origo = CsPoint3D(0,0,0);
-        CsPlane3D planarRay = CsPlane3D(norm, 0, infinitshape, nodalpoint);
+        CsPlane3D planarRay = CsPlane3D(norm, 0, infinitshape, nodalPoint);
         planarRaysOriginal.append(planarRay);
         planarRays.append(planarRay);
 
@@ -34,14 +33,14 @@ CsCamera::OzCamera(CsPoint3D nodpoint, int widthinpixels) {
         //---------------------
 
         QVector3D parallelnorm = QVector3D(1,0,0);
-        CsPoint3D ppp = OzPoint3d(nodalPoint.x  + i-(widthinpixels/2), nodalPoint.y, nodalPoint.z);
+        CsPoint3D ppp = CsPoint3D(nodalPoint.x  + i-(widthinpixels/2), nodalPoint.y, nodalPoint.z);
         CsPlane3D parallelvertical= CsPlane3D(parallelnorm, 0, infinitshape,ppp);
         parallelPlanarRaysOriginal.append(parallelvertical);
         parallelPlanarRays.append(parallelvertical);
 
 
         parallelnorm = QVector3D(0,1,0);
-        ppp = OzPoint3d(nodalPoint.x, nodalPoint.y + i-(widthinpixels/2), nodalPoint.z);
+        ppp = CsPoint3D(nodalPoint.x, nodalPoint.y + i-(widthinpixels/2), nodalPoint.z);
         CsPlane3D parallelhorizontal = CsPlane3D(parallelnorm, 0, infinitshape, ppp);
         parallelPlanarRaysOriginal.append(parallelhorizontal);
         parallelPlanarRays.append(parallelhorizontal);
@@ -103,7 +102,7 @@ void CsCamera::goForward(float val){
 
 }
 
-void OzCamera3d::goBackward(float val){
+void CsCamera::goBackward(float val){
 
    // focus.z += val * cos(line.theta)*cos(line.phi);
    // focus.y += val * sin(line.phi)*sin(line.psi);
