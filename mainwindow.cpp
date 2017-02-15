@@ -75,8 +75,78 @@ void MainWindow::refresh(){
 
     qApp->processEvents();
 
-    ui->label->setPixmap(QPixmap::fromImage(img));
+    ui->notLabel->setPixmap(QPixmap::fromImage(img));
 
 
 }
 
+CsPoint3D ppp = CsPoint3D(0, 0, 0);
+QVector3D yy = QVector3D( 0,1,0);
+CsLine3D longiy = CsLine3D(yy,0,30000, ppp);
+
+
+void MainWindow::on_initButton_clicked()
+{
+    for(int i = 0; i < 60; i++){
+
+        SCN3.putLine3d(&lines3d[i]);
+       // SCN3.putPoint(&ponts[i]);
+    }
+    SCN3.putLine3d(&longiy);
+    refresh();
+
+}
+
+void MainWindow::on_upButtonCamera_clicked()
+{
+    QQuaternion fact;
+    QQuaternion fwdDir = fact.fromDirection(QVector3D(0, -sin(M_PI/20), cos(M_PI/20)), QVector3D(0,0,0));
+    SCN3.camera.rotation(fwdDir);
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_downButtonCamera_clicked()
+{
+    QQuaternion fact;
+    QQuaternion fwdDir = fact.fromDirection(QVector3D(0, sin(M_PI/20), cos(M_PI/20)), QVector3D(0,0,0));
+    SCN3.camera.rotation(fwdDir);
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_leftButtonCamera_clicked()
+{
+    QQuaternion fact;
+    QQuaternion fwdDir = fact.fromDirection(QVector3D( sin(M_PI/20),0, cos(M_PI/20)),QVector3D(0,0,0));
+    SCN3.camera.rotation(fwdDir);
+
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_rightButtonCamera_clicked()
+{
+
+    QQuaternion fact;
+    QQuaternion fwdDir = fact.fromDirection(QVector3D( -sin(M_PI/20),0, cos(M_PI/20)),QVector3D(0,0,0));
+    SCN3.camera.rotation( fwdDir);
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_forwardButtonCamera_clicked()
+{
+
+    SCN3.camera.goForward(1);
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_backwardbuttonCamera_clicked()
+{
+
+    SCN3.camera.goBackward(1);
+    SCN3.redrawAll();
+    refresh();
+}

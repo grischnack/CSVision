@@ -69,6 +69,7 @@ void CsCamera::actualizeRays(){
     for(int i = 0; i < n; i++){
         CsPlane3D tmp = planarRaysOriginal.at(i);
         tmp.normal = rot.rotatedVector(tmp.normal);
+        tmp.center = CsPoint3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
         planarRays.append( tmp);
     }
 
@@ -82,7 +83,7 @@ void CsCamera::actualizeRays(){
         QVector3D rotplan = cam-plan;
         rotplan = rot.rotatedVector(rotplan);
         //rotplan = cam+rotplan;
-       // tmp.center = CsPoint3D(rotplan.x(), rotplan.y(), rotplan.z());
+        //tmp.center = CsPoint3D(, rotplan.y(), rotplan.z());
         parallelPlanarRays.append(tmp);
     }
 }
