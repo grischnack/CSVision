@@ -25,7 +25,10 @@ public:
     float* calculatePointAngle(CsPoint3D* point);
     int* calcualtePoint(CsPoint3D* point);
     void drawLine(CsLine3D *lin);
-    void calculateLine(CsLine3D *lin);
+    QList<QGenericMatrix<3, 1, int> > calculateLine(CsLine3D *lin);
+    void putPlane(CsPlane3D* plan);
+    QList<QGenericMatrix<3, 1, int> > calculatePlane(CsPlane3D* plan);
+    void drawPlane(CsPlane3D* plan);
 
     QList<float> cartesianToSpherical(float x, float y, float z);
     QList<float> sphericalToCartesian(float r, float inclination, float azimuth);

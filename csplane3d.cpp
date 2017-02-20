@@ -7,7 +7,7 @@ CsPlane3D::CsPlane3D(QVector3D norm, float dist, CsShape2D shap, CsPoint3D cent)
     center = cent;
 }
 
-CsPoint3D CsPlane3D::intersection(CsLine3D *lin) const{
+CsPoint3D CsPlane3D::intersection(const CsLine3D *lin) const{
     CsPoint3D pointInters;
     QVector3D lincent = QVector3D(lin->center.x, lin->center.y, lin->center.z);
     float length;
@@ -24,6 +24,7 @@ CsPoint3D CsPlane3D::intersection(CsLine3D *lin) const{
             if(dotDenominator != 0.0f){
                 length =  dotNumerator / dotDenominator;
 
+                if(abs(length)<lin->length/2){
                 vector = lin->direction;
                 vector *= length;
 
@@ -31,6 +32,7 @@ CsPoint3D CsPlane3D::intersection(CsLine3D *lin) const{
 
                 pointInters = CsPoint3D(intersection.x(), intersection.y(), intersection.z());
 
+                }
 
             }
 

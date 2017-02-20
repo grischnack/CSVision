@@ -18,6 +18,7 @@ public:
     void goBackward(float val);
     void rotation(QQuaternion q);
     void actualizeRays();
+    void generateRays();
 
     QQuaternion rot = QQuaternion(1, 0, 0, 0);
 
@@ -25,14 +26,18 @@ public:
 
     CsPoint3D nodalPoint;
     float focallength = 1.0;
-    float angleOfView;
+
+    int widthInPixels;
 
 
     QList<CsPlane3D> planarRaysOriginal;
     QList<CsPlane3D> planarRays;
     QList<CsPlane3D> parallelPlanarRaysOriginal;
     QList<CsPlane3D> parallelPlanarRays;
+    QList<CsLine3D> raysOriginal;
     QList<CsLine3D> rays;
+    QList<CsLine3D> parallelRaysOriginal;
+    QList<CsLine3D> parallelRays;
 };
 
 #endif // CSCAMERA_H

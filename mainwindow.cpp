@@ -150,3 +150,57 @@ void MainWindow::on_backwardbuttonCamera_clicked()
     SCN3.redrawAll();
     refresh();
 }
+
+void MainWindow::on_radioButtonCurvilinear_toggled(bool checked)
+{
+    if(checked){
+        SCN3.camera.curvRectOrt = 1;
+    }
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_radioButtonRectilinear_toggled(bool checked)
+{
+    if(checked){
+        SCN3.camera.curvRectOrt = 2;
+    }
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_radioButtonOrtographic_toggled(bool checked)
+{
+    if(checked){
+        SCN3.camera.curvRectOrt = 3;
+    }
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_focalLengthSlider_valueChanged(int value)
+{
+    SCN3.camera.setFocalLength(value*0.01);
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_rollLeftButtonCamera_clicked()
+{
+    QQuaternion fact;
+    QQuaternion upDir = fact.fromDirection(QVector3D(0,0,1),QVector3D( -sin(M_PI/20), cos(M_PI/20), 0));
+    SCN3.camera.rotation(upDir);
+
+    SCN3.redrawAll();
+    refresh();
+}
+
+void MainWindow::on_rollRightButtonCamera_clicked()
+{
+
+    QQuaternion fact;
+    QQuaternion upDir = fact.fromDirection(QVector3D(0,0,1),QVector3D( sin(M_PI/20), cos(M_PI/20), 0));
+    SCN3.camera.rotation( upDir);
+    SCN3.redrawAll();
+    refresh();
+}

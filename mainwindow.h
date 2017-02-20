@@ -31,6 +31,18 @@ private slots:
 
     void on_backwardbuttonCamera_clicked();
 
+    void on_radioButtonCurvilinear_toggled(bool checked);
+
+    void on_radioButtonRectilinear_toggled(bool checked);
+
+    void on_radioButtonOrtographic_toggled(bool checked);
+
+    void on_focalLengthSlider_valueChanged(int value);
+
+    void on_rollLeftButtonCamera_clicked();
+
+    void on_rollRightButtonCamera_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
