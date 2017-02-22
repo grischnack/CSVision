@@ -62,6 +62,7 @@ void CsCamera::generateRays(){
         for(int j = 0; j < widthInPixels; j++){
 
             QVector3D rayvec = QVector3D(j-widthInPixels/2, i-widthInPixels/2, focallength*widthInPixels);
+            rayvec = rayvec.normalized();
             CsLine3D ray = CsLine3D(rayvec, 0, INFINITY, nodalPoint);
             raysOriginal.append(ray);
             rays.append(ray);
@@ -69,6 +70,17 @@ void CsCamera::generateRays(){
     }
 
     // -------- parallel rays
+
+    for(int i = 0; i < widthInPixels; i++){
+        for(int j = 0; j < widthInPixels; j++){
+            QVector3D rayvec = QVector3D(0,0,1);
+            QVector3D offset = QVector3D(j-widthInPixels/2, i-widthInPixels/2,0);
+            QVector3D nodalvec = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+            QVector3D origvec = nodalvec - offset;
+            CsPoint3D rayorigin = CsPoint3D(origvec.x(), origvec.y(), origvec.z());
+            CsLine3D ray = CsLine3D(rayvec , 0, INFINITY, rayorigin );
+        }
+    }
 
 }
 

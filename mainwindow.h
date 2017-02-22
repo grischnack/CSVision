@@ -43,6 +43,22 @@ private slots:
 
     void on_rollRightButtonCamera_clicked();
 
+    void on_lineSliderx_valueChanged(int value);
+
+    void on_lineSlidery_valueChanged(int value);
+
+    void on_lineSliderz_valueChanged(int value);
+
+    void on_lineSlidertheta_valueChanged(int value);
+
+    void on_lineSliderphi_valueChanged(int value);
+
+    void on_lineSliderpsi_valueChanged(int value);
+
+    void on_lineSliderd_valueChanged(int value);
+
+    void on_lineSliderl_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 };

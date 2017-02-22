@@ -204,3 +204,43 @@ void MainWindow::on_rollRightButtonCamera_clicked()
     SCN3.redrawAll();
     refresh();
 }
+
+void MainWindow::on_lineSliderx_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSlidery_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSliderz_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSlidertheta_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSliderphi_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSliderpsi_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSliderd_valueChanged(int value)
+{
+
+}
+
+void MainWindow::on_lineSliderl_valueChanged(int value)
+{
+
+}
