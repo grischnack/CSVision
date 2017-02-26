@@ -26,4 +26,8 @@ void CsLine3D::yaw(float angle){
 
 }
 void CsLine3D::roll(float angle){
+
+    QQuaternion upDir = qFactory.fromDirection(QVector3D(0,0,1),QVector3D( -sin(angle), cos(angle), 0));
+
+    direction =upDir.rotatedVector(direction);
 }

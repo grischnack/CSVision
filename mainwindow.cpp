@@ -208,39 +208,65 @@ void MainWindow::on_rollRightButtonCamera_clicked()
 void MainWindow::on_lineSliderx_valueChanged(int value)
 {
 
+    longiy.center.x = value*10;
+    SCN3.redrawAll();
+    refresh();
 }
 
 void MainWindow::on_lineSlidery_valueChanged(int value)
 {
 
+    longiy.center.y = value*10;
+    SCN3.redrawAll();
+    refresh();
 }
 
 void MainWindow::on_lineSliderz_valueChanged(int value)
 {
 
+    longiy.center.z = value*10;
+    SCN3.redrawAll();
+    refresh();
 }
 
+int pitchdiff = 0;
 void MainWindow::on_lineSlidertheta_valueChanged(int value)
 {
-
+    longiy.pitch((value - pitchdiff)*M_PI*0.01);
+    pitchdiff = value;
+    SCN3.redrawAll();
+    refresh();
 }
 
+int yawdiff = 0;
 void MainWindow::on_lineSliderphi_valueChanged(int value)
 {
-
+    longiy.yaw((value - yawdiff)*M_PI*0.01);
+    yawdiff = value;
+    SCN3.redrawAll();
+    refresh();
 }
 
+int rolldiff = 0;
 void MainWindow::on_lineSliderpsi_valueChanged(int value)
 {
-
+    longiy.roll((value - rolldiff)*M_PI*0.01);
+    rolldiff =value;
+    SCN3.redrawAll();
+    refresh();
 }
 
 void MainWindow::on_lineSliderd_valueChanged(int value)
 {
-
+    longiy.distance = value*10;
+    SCN3.redrawAll();
+    refresh();
 }
 
 void MainWindow::on_lineSliderl_valueChanged(int value)
 {
 
+    longiy.length = value*10;
+    SCN3.redrawAll();
+    refresh();
 }
