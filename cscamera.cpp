@@ -43,14 +43,14 @@ void CsCamera::generateRays(){
 
         QVector3D parallelnorm = QVector3D(1,0,0);
         CsPoint3D ppp = CsPoint3D(nodalPoint.x  + i-(widthInPixels/2), nodalPoint.y, nodalPoint.z);
-        CsPlane3D parallelvertical= CsPlane3D(parallelnorm, 0, infinitshape,ppp);
+        CsPlane3D parallelvertical= CsPlane3D(parallelnorm, i-(widthInPixels/2), infinitshape,nodalPoint);
         parallelPlanarRaysOriginal.append(parallelvertical);
         parallelPlanarRays.append(parallelvertical);
 
 
         parallelnorm = QVector3D(0,1,0);
         ppp = CsPoint3D(nodalPoint.x, nodalPoint.y + i-(widthInPixels/2), nodalPoint.z);
-        CsPlane3D parallelhorizontal = CsPlane3D(parallelnorm, 0, infinitshape, ppp);
+        CsPlane3D parallelhorizontal = CsPlane3D(parallelnorm, i-(widthInPixels/2), infinitshape, nodalPoint);
         parallelPlanarRaysOriginal.append(parallelhorizontal);
         parallelPlanarRays.append(parallelhorizontal);
     }
@@ -116,12 +116,13 @@ void CsCamera::actualizeRays(){
     for(int i = 0; i < np; i++){
         CsPlane3D tmp = parallelPlanarRaysOriginal.at(i);
         tmp.normal = rot.rotatedVector(tmp.normal);
-        QVector3D cam = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
-        QVector3D plan = QVector3D(tmp.center.x, tmp.center.y, tmp.center.z);
-        QVector3D rotplan = cam-plan;
-        rotplan = rot.rotatedVector(rotplan);
-        rotplan = cam+rotplan;
-        tmp.center = CsPoint3D(rotplan.x(), rotplan.y(), rotplan.z());
+      //  QVector3D cam = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+       // QVector3D plan = QVector3D(tmp.center.x, tmp.center.y, tmp.center.z);
+       // QVector3D rotplan = cam-plan;
+       // rotplan = rot.rotatedVector(rotplan);
+       // rotplan = cam+rotplan;
+       // tmp.center = CsPoint3D(rotplan.x(), rotplan.y(), rotplan.z());
+         tmp.center = CsPoint3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
         parallelPlanarRays.append(tmp);
     }
 }
