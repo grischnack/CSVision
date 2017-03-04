@@ -16,6 +16,7 @@ public:
     ~MainWindow();
     void refresh();
 
+
 private slots:
     void on_initButton_clicked();
 
@@ -58,6 +59,10 @@ private slots:
     void on_lineSliderd_valueChanged(int value);
 
     void on_lineSliderl_valueChanged(int value);
+
+    void on_verticalSlider_valueChanged(int value);
+
+    void on_horizontalSlider_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
