@@ -280,6 +280,7 @@ void MainWindow::on_verticalSlider_valueChanged(int value)
 
     float angle = (value-orbitincdiff)*0.02*M_PI;
     orbitincdiff = value;
+
     QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D(0, sin(angle), cos(angle)), QVector3D(0,0,0));
     SCN3.camera.rotation(fwdDir);
 
@@ -291,17 +292,48 @@ void MainWindow::on_verticalSlider_valueChanged(int value)
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
 
-    nodalrelground = fwdDir.inverted().rotatedVector(nodalrelground);
+    nodalrelground = fwdDir.rotatedVector(-nodalrelground);
+
 
     QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
     CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+    qDebug() << "oldd" << SCN3.camera.nodalPoint.x << SCN3.camera.nodalPoint.y << SCN3.camera.nodalPoint.z;
+    qDebug() << "neww" << newNodal.x << newNodal.y  << newNodal.z;
     SCN3.camera.nodalPoint = newNodal;
     SCN3.camera.actualizeRays();
     SCN3.redrawAll();
     refresh();
 }
-
+int orbitazdiff = 0;
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
 
+    QVector3D camdir = QVector3D(0,0,-1);
+    camdir = SCN3.camera.rot.rotatedVector(camdir);
+
+    float angle = (value-orbitazdiff)*0.02*M_PI;
+    orbitazdiff = value;
+
+    QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D( sin(angle), 0, cos(angle)), QVector3D(0,0,0));
+    SCN3.camera.rotation(fwdDir);
+
+
+    CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
+    CsShape2D inf = CsShape2D();
+    CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
+    CsPoint3D groundpoint = ground.intersection(&camline);
+    QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
+            - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
+
+    nodalrelground = fwdDir.rotatedVector(-nodalrelground);
+
+
+    QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
+    CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+    qDebug() << "oldd" << SCN3.camera.nodalPoint.x << SCN3.camera.nodalPoint.y << SCN3.camera.nodalPoint.z;
+    qDebug() << "neww" << newNodal.x << newNodal.y  << newNodal.z;
+    SCN3.camera.nodalPoint = newNodal;
+    SCN3.camera.actualizeRays();
+    SCN3.redrawAll();
+    refresh();
 }
