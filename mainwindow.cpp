@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
         CsPoint3D pr = CsPoint3D(300, 0, i*20);
         QVector3D qp = QVector3D(1, 0, 0);
         QVector3D qr = QVector3D(0, 0, 1);
-        lines3d[i] = CsLine3D(qp,0, 600, pr);
-        lines3d[30+i] = CsLine3D(qr, 0, 600, pp);
+        lines3d[i] = CsLine3D(qp,0, 600000, pr);
+        lines3d[30+i] = CsLine3D(qr, 0, 600000, pp);
     }
 
     ui->setupUi(this);
@@ -291,6 +291,7 @@ void MainWindow::on_verticalSlider_valueChanged(int value)
     CsPoint3D groundpoint = ground.intersection(&camline);
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
+    qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
 
     nodalrelground = fwdDir.rotatedVector(-nodalrelground);
 
@@ -314,9 +315,15 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     float angle = (value-orbitazdiff)*0.02*M_PI;
     orbitazdiff = value;
 
-    QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D( sin(angle), 0, cos(angle)), QVector3D(0,0,0));
-    SCN3.camera.rotation(fwdDir);
+    //QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D( sin(angle), 0, cos(angle)), QVector3D(0,0,0));
+    //SCN3.camera.rotation(fwdDir);
+    //QQuaternion upDir = QQuaternion::fromDirection( QVector3D(0,0,1), QVector3D( -sin(angle), cos(angle),0));
+    //SCN3.camera.rotation(upDir);
 
+
+    QVector3D axis = QVector3D(0,1,0);
+    QQuaternion axang = QQuaternion::fromAxisAndAngle(axis, angle*(180/M_PI));
+    SCN3.camera.rotation(axang);
 
     CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
     CsShape2D inf = CsShape2D();
@@ -325,8 +332,10 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
 
-    nodalrelground = fwdDir.rotatedVector(-nodalrelground);
+    qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
 
+    nodalrelground = axang.rotatedVector(-nodalrelground);
+    //nodalrelground = upDir.inverted().rotatedVector(nodalrelground);
 
     QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
     CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());

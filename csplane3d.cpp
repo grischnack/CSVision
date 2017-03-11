@@ -50,3 +50,7 @@ CsPoint3D CsPlane3D::intersection(const CsLine3D *lin) const{
 
     return pointInters;
 }
+
+CsLine3D CsPlane3D::intersection(const CsPlane3D *plan) const{
+
+}

@@ -11,6 +11,7 @@ class CsPlane3D
 public:
     CsPlane3D(QVector3D norm, float dist, CsShape2D shap, CsPoint3D cent);
     CsPoint3D intersection(const CsLine3D *lin) const;
+    CsLine3D intersection(const CsPlane3D *plan) const;
 
     QVector3D normal;
     float distance;
