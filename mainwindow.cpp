@@ -342,7 +342,18 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 //TODO first change nodalrelground to spherical then increment.
     //Then create quaternion from nodalrelground (not sure about roll) and feed it to camera.
 
+    CsPoint3D nodalrelgroundpoint = CsPoint3D(nodalrelground.x(), nodalrelground.y(), nodalrelground.z());
+    CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, nodalrelgroundpoint.azimut+angle);
+    QVector3D nodalrelgroundincrementedv = QVector3D(nodalrelgroundincremented.x, nodalrelgroundincremented.y, nodalrelgroundincremented.z);
+    QVector3D nodalrelgroundcrossp = QVector3D::crossProduct(nodalrelgroundincrementedv,nodalrelground);
 
+
+    QQuaternion lookatdir = QQuaternion(sqrt(pow(nodalrelground.length(),2)*pow(nodalrelgroundincrementedv.length(),2)) + QVector3D::dotProduct(nodalrelground, nodalrelgroundincrementedv), nodalrelgroundcrossp);
+    SCN3.camera.rotation(lookatdir);
+
+
+    nodalrelground = nodalrelgroundincrementedv;
+    //------------------TODO debug
     //nodalrelground = axang.rotatedVector(-nodalrelground);
    // nodalrelground = upDir.inverted().rotatedVector(nodalrelground);
 
