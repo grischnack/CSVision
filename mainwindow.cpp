@@ -309,21 +309,26 @@ int orbitazdiff = 0;
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
 
-    QVector3D camdir = QVector3D(0,0,-1);
-    camdir = SCN3.camera.rot.rotatedVector(camdir);
-
     float angle = (value-orbitazdiff)*0.02*M_PI;
+    float upangle = (value*0.02*M_PI)/100;
     orbitazdiff = value;
 
-    //QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D( sin(angle), 0, cos(angle)), QVector3D(0,0,0));
+
+   // QVector3D axis = QVector3D(0,1,0);
+   // QQuaternion axang = QQuaternion::fromAxisAndAngle(axis, angle*(180/M_PI));
+   // SCN3.camera.rotation(axang);
+
+    //QQuaternion fwdDir = QQuaternion::fromDirection(QVector3D( sin(angle), 0, cos(angle)), QVector3D( 0,0,0));
     //SCN3.camera.rotation(fwdDir);
-    //QQuaternion upDir = QQuaternion::fromDirection( QVector3D(0,0,1), QVector3D( -sin(angle), cos(angle),0));
+    //QQuaternion upDir = QQuaternion::fromDirection( QVector3D(0,0,1), QVector3D( -sin(upangle), cos(upangle),0));
     //SCN3.camera.rotation(upDir);
 
 
-    QVector3D axis = QVector3D(0,1,0);
-    QQuaternion axang = QQuaternion::fromAxisAndAngle(axis, angle*(180/M_PI));
-    SCN3.camera.rotation(axang);
+    QVector3D camdir = QVector3D(0,0,-1);
+    camdir = SCN3.camera.rot.rotatedVector(camdir);
+
+
+
 
     CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
     CsShape2D inf = CsShape2D();
@@ -334,8 +339,12 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 
     qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
 
-    nodalrelground = axang.rotatedVector(-nodalrelground);
-    //nodalrelground = upDir.inverted().rotatedVector(nodalrelground);
+//TODO first change nodalrelground to spherical then increment.
+    //Then create quaternion from nodalrelground (not sure about roll) and feed it to camera.
+
+
+    //nodalrelground = axang.rotatedVector(-nodalrelground);
+   // nodalrelground = upDir.inverted().rotatedVector(nodalrelground);
 
     QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
     CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
