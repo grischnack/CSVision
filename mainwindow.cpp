@@ -309,7 +309,8 @@ int orbitazdiff = 0;
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
 
-    float angle = (value-orbitazdiff)*0.02*M_PI;
+   // float angle = (value-orbitazdiff)*0.02*M_PI;
+    float angle = value*0.02*M_PI;
     float upangle = (value*0.02*M_PI)/100;
     orbitazdiff = value;
 
@@ -336,27 +337,29 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     CsPoint3D groundpoint = ground.intersection(&camline);
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
-
     nodalrelground = -nodalrelground;
     qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
 
 //TODO first change nodalrelground to spherical then increment.
     //Then create quaternion from nodalrelground (not sure about roll) and feed it to camera.
+    //TODO Update: disregard original cartesian coordinates and calculate spherical coordinates whilst reserving the ground point
+    // also implement camera.unroll function
 
 
     CsPoint3D nodalrelgroundpoint = CsPoint3D(nodalrelground.x(), nodalrelground.y(), nodalrelground.z());
-    qDebug() << nodalrelground << nodalrelgroundpoint.dist << nodalrelgroundpoint.inclination << nodalrelgroundpoint.azimut << angle ;
-    CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, nodalrelgroundpoint.azimut+angle);
+    qDebug() << "spherics" << nodalrelground << nodalrelgroundpoint.dist << nodalrelgroundpoint.inclination << nodalrelgroundpoint.azimut << angle ;
+    //CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, nodalrelgroundpoint.azimut+angle); //az+angle
+    CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, angle);
     QVector3D nodalrelgroundincrementedv = QVector3D(nodalrelgroundincremented.x, nodalrelgroundincremented.y, nodalrelgroundincremented.z);
-    QVector3D nodalrelgroundcrossp = QVector3D::crossProduct(nodalrelgroundincrementedv, nodalrelground);
+    QVector3D nodalrelgroundcrossp = QVector3D::crossProduct( nodalrelgroundincrementedv, nodalrelground);
 
+    qDebug() << "nodalrelg" << nodalrelground << nodalrelgroundincrementedv;
 
-    QQuaternion lookatdir = QQuaternion(sqrt(pow(nodalrelground.length(),2)*pow(nodalrelgroundincrementedv.length(),2)) + QVector3D::dotProduct(nodalrelgroundincrementedv, nodalrelground ), -nodalrelgroundcrossp);
+    QQuaternion lookatdir = QQuaternion(sqrt(pow(nodalrelgroundincrementedv.length(),2)*pow(nodalrelground.length(),2)) + QVector3D::dotProduct( nodalrelgroundincrementedv, nodalrelground  ), -nodalrelgroundcrossp);
     lookatdir = lookatdir.normalized();
-    lookatdir = lookatdir * QQuaternion(1, 0, 0, 0);//here comes something else
     QVector3D nix = QVector3D(0,0,1);
     nix = lookatdir.rotatedVector(nix);
-    qDebug() << nix;
+    qDebug() << "quater" << nix;
     SCN3.camera.rotation(lookatdir);
 
 
@@ -367,8 +370,8 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 
     QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
     CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
-    qDebug() << "oldd" << SCN3.camera.nodalPoint.x << SCN3.camera.nodalPoint.y << SCN3.camera.nodalPoint.z;
-    qDebug() << "neww" << newNodal.x << newNodal.y  << newNodal.z;
+    qDebug() << "olddnodal" << SCN3.camera.nodalPoint.x << SCN3.camera.nodalPoint.y << SCN3.camera.nodalPoint.z;
+    qDebug() << "newwnodal" << newNodal.x << newNodal.y  << newNodal.z;
     SCN3.camera.nodalPoint = newNodal;
     SCN3.camera.actualizeRays();
     SCN3.redrawAll();
