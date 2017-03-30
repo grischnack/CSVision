@@ -243,7 +243,12 @@ QList<QGenericMatrix<3, 1, int> > CsScene3D::calculateLine(CsLine3D *lin){
 
             int xx = coords[0];
             int yy = coords[1];
-            int coqrds[3] = {xx, yy, 0};
+            float ds = sqrt(calculatePointDist(&intersection));
+            int dd = (int)((ds/70.0)*(127.0));
+            if(dd>127){
+                dd=255;
+            }
+            int coqrds[3] = {xx, yy, dd};
             linPixels.append(QGenericMatrix<3,1,int>(coqrds));
 
         }
@@ -261,7 +266,7 @@ void CsScene3D::drawLine(CsLine3D *lin){
     int n = linePixels.count();
     for(int i = 0; i < n; i++){
 
-        setPixel(linePixels.at(i)(0,0), linePixels.at(i)(0,1), 0);
+        setPixel(linePixels.at(i)(0,0), linePixels.at(i)(0,1), linePixels.at(i)(0,2));
 
         lin->pixels.append(linePixels.at(i));
 

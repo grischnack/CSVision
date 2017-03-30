@@ -19,6 +19,7 @@ public:
     void rotation(QQuaternion q);
     void actualizeRays();
     void generateRays();
+    void unRoll();
 
     QQuaternion rot = QQuaternion(1, 0, 0, 0);
 

@@ -10,9 +10,9 @@ CsPoint3D::CsPoint3D(float xx, float yy, float zz){
 }
 
 CsPoint3D::CsPoint3D(bool noth, float r, float inc, float az){
-    x = r * sin(inc) * cos(az);
+    x = r * cos(inc) * sin(az);
     y = r * sin(inc) * sin(az);
-    z = r * sin(az);
+    z = r * cos(az);
     dist = r;
     inclination = inc;
     azimut = az;

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#define RAND_MAX 100
+
 namespace Ui {
 class MainWindow;
 }
@@ -63,6 +65,10 @@ private slots:
     void on_verticalSlider_valueChanged(int value);
 
     void on_horizontalSlider_valueChanged(int value);
+
+    void on_randqButton_clicked();
+
+    void on_unrollButton_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -8,7 +8,7 @@
 
 CsPoint3D orig = CsPoint3D(0, 0, 0);
 QVector3D o = QVector3D(0,0,0);
-CsLine3D lines3d[60] = {CsLine3D(o, 0, 300, orig)};
+CsLine3D lines3d[120] = {CsLine3D(o, 0, 300, orig)};
 CsScene3D SCN3 = CsScene3D();
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -40,6 +40,14 @@ MainWindow::MainWindow(QWidget *parent) :
         lines3d[i] = CsLine3D(qp,0, 600000, pr);
         lines3d[30+i] = CsLine3D(qr, 0, 600000, pp);
     }
+    for(int i  = 0; i < 30; i++){
+        CsPoint3D pp = CsPoint3D( 0, i*20, 300);
+        CsPoint3D pr = CsPoint3D( 0, 300, i*20);
+        QVector3D qp = QVector3D(0, 1, 0);
+        QVector3D qr = QVector3D(0, 0, 1);
+        lines3d[60 + i] = CsLine3D(qp,0, 600000, pr);
+        lines3d[90+i] = CsLine3D(qr, 0, 600000, pp);
+    }
 
     ui->setupUi(this);
 
@@ -67,7 +75,7 @@ void MainWindow::refresh(){
                 img.setPixel(i, j, qRgba(255, 255, 255, 255));
             } else {
 
-                img.setPixel(i, j, qRgba(0, 255,0, 255 - SCN3.pixels[i][j]));
+                img.setPixel(i, j, qRgba(255, 255,255, 255 - SCN3.pixels[i][j]));
 
             }
         }
@@ -87,7 +95,7 @@ CsLine3D longiy = CsLine3D(yy,0,30000, ppp);
 
 void MainWindow::on_initButton_clicked()
 {
-    for(int i = 0; i < 60; i++){
+    for(int i = 0; i < 120; i++){
 
         SCN3.putLine3d(&lines3d[i]);
        // SCN3.putPoint(&ponts[i]);
@@ -305,6 +313,8 @@ void MainWindow::on_verticalSlider_valueChanged(int value)
     SCN3.redrawAll();
     refresh();
 }
+
+
 int orbitazdiff = 0;
 void MainWindow::on_horizontalSlider_valueChanged(int value)
 {
@@ -334,7 +344,8 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
     CsShape2D inf = CsShape2D();
     CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
-    CsPoint3D groundpoint = ground.intersection(&camline);
+    CsPoint3D groundpoint =  CsPoint3D(0,0,0); //ground.intersection(&camline);
+
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
     nodalrelground = -nodalrelground;
@@ -344,12 +355,13 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     //Then create quaternion from nodalrelground (not sure about roll) and feed it to camera.
     //TODO Update: disregard original cartesian coordinates and calculate spherical coordinates whilst reserving the ground point
     // also implement camera.unroll function
-
+    //TODO Update 2: dont use sphericals. Constuct Quaternion from axis and angle and use it on nodalrelground
+    //and its inverse in camera
 
     CsPoint3D nodalrelgroundpoint = CsPoint3D(nodalrelground.x(), nodalrelground.y(), nodalrelground.z());
     qDebug() << "spherics" << nodalrelground << nodalrelgroundpoint.dist << nodalrelgroundpoint.inclination << nodalrelgroundpoint.azimut << angle ;
     //CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, nodalrelgroundpoint.azimut+angle); //az+angle
-    CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, nodalrelgroundpoint.inclination, angle);
+    CsPoint3D nodalrelgroundincremented = CsPoint3D(true, nodalrelgroundpoint.dist, M_PI/2-angle, 0);
     QVector3D nodalrelgroundincrementedv = QVector3D(nodalrelgroundincremented.x, nodalrelgroundincremented.y, nodalrelgroundincremented.z);
     QVector3D nodalrelgroundcrossp = QVector3D::crossProduct( nodalrelgroundincrementedv, nodalrelground);
 
@@ -374,6 +386,65 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
     qDebug() << "newwnodal" << newNodal.x << newNodal.y  << newNodal.z;
     SCN3.camera.nodalPoint = newNodal;
     SCN3.camera.actualizeRays();
+    SCN3.redrawAll();
+    refresh();
+}
+
+
+
+void MainWindow::on_randqButton_clicked()
+{
+    float scalar = ((float)rand());
+    float x = ((float)rand());
+    float y = ((float)rand());
+    float z = ((float)rand());
+    //QQuaternion random = QQuaternion(scalar, x, y, z);
+    //QQuaternion random = QQuaternion::fromDirection(QVector3D(sin(0.1),0, cos(0.1)), QVector3D(0,0,0));
+    //QQuaternion random = QQuaternion::fromAxisAndAngle(0,1,0, 5.0);
+    QQuaternion random = QQuaternion::fromDirection(QVector3D(0, sin(0.1), cos(0.1)), QVector3D(0,0,0));
+    random = random.normalized();
+    QVector3D nix = QVector3D(0,0,-1);
+
+
+    QVector3D camdir = QVector3D(0,0,-1);
+    camdir = SCN3.camera.rot.rotatedVector(camdir);
+    CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
+    CsShape2D inf = CsShape2D();
+    CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
+    CsPoint3D groundpoint =  ground.intersection(&camline);
+
+    QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
+            - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
+    //nodalrelground = -nodalrelground;
+
+
+    nodalrelground = random.rotatedVector(-nodalrelground);
+
+    QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
+    CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+
+    SCN3.camera.nodalPoint = newNodal;
+
+
+    SCN3.camera.unRoll();
+    SCN3.camera.rotation(random);
+    nix = SCN3.camera.rot.rotatedVector(nix);
+    SCN3.camera.actualizeRays();
+    SCN3.redrawAll();
+    refresh();
+    //qDebug() << random;
+    //qDebug() << SCN3.camera.rot;
+    //qDebug() << nix;
+
+    qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
+
+
+}
+
+
+void MainWindow::on_unrollButton_clicked()
+{
+    SCN3.camera.unRoll();
     SCN3.redrawAll();
     refresh();
 }

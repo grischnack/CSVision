@@ -13,6 +13,15 @@ CsCamera::CsCamera(CsPoint3D nodpoint, int widthinpixels) {
     generateRays();
 }
 
+void CsCamera::unRoll(){
+    QVector3D fwd = QVector3D(0,0,1);
+    fwd = rot.rotatedVector(fwd);
+    QQuaternion unrolled = QQuaternion::fromDirection(fwd, QVector3D(0,1,0));
+
+    rot = unrolled;
+    actualizeRays();
+}
+
 
 void CsCamera::generateRays(){
 
