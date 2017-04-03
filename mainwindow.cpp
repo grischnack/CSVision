@@ -391,17 +391,20 @@ void MainWindow::on_horizontalSlider_valueChanged(int value)
 }
 
 
+QVector3D upax = QVector3D(0,1,0);
+CsPoint3D groundpoint = CsPoint3D(0,0,0);
 
 void MainWindow::on_randqButton_clicked()
 {
+
     float scalar = ((float)rand());
     float x = ((float)rand());
     float y = ((float)rand());
     float z = ((float)rand());
-    //QQuaternion random = QQuaternion(scalar, x, y, z);
+   // QQuaternion random = QQuaternion(scalar, x, y, z);
     //QQuaternion random = QQuaternion::fromDirection(QVector3D(sin(0.1),0, cos(0.1)), QVector3D(0,0,0));
-    //QQuaternion random = QQuaternion::fromAxisAndAngle(0,1,0, 5.0);
-    QQuaternion random = QQuaternion::fromDirection(QVector3D(0, sin(0.1), cos(0.1)), QVector3D(0,0,0));
+
+    QQuaternion random = QQuaternion::fromDirection(QVector3D( sin(0.1),0, cos(0.1)), QVector3D(0,0,0));
     random = random.normalized();
     QVector3D nix = QVector3D(0,0,-1);
 
@@ -411,11 +414,19 @@ void MainWindow::on_randqButton_clicked()
     CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
     CsShape2D inf = CsShape2D();
     CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
-    CsPoint3D groundpoint =  ground.intersection(&camline);
+
+    CsPoint3D tmpgroundpoint =  ground.intersection(&camline);
+    if(abs(tmpgroundpoint.x - groundpoint.x) > 1.0 || abs(tmpgroundpoint.y - groundpoint.y) > 1.0 || abs(tmpgroundpoint.z-groundpoint.z) > 1.0){
+        groundpoint = tmpgroundpoint;
+
+
+        SCN3.camera.unRoll();
+        upax = SCN3.camera.rot.conjugated().rotatedVector(QVector3D(0,1,0));
+
+    }
 
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
-    //nodalrelground = -nodalrelground;
 
 
     nodalrelground = random.rotatedVector(-nodalrelground);
@@ -425,9 +436,11 @@ void MainWindow::on_randqButton_clicked()
 
     SCN3.camera.nodalPoint = newNodal;
 
+    QQuaternion randomm = QQuaternion::fromAxisAndAngle(upax,(180/M_PI)*0.1 );
 
-    SCN3.camera.unRoll();
-    SCN3.camera.rotation(random);
+
+
+    SCN3.camera.rotation(randomm);
     nix = SCN3.camera.rot.rotatedVector(nix);
     SCN3.camera.actualizeRays();
     SCN3.redrawAll();
