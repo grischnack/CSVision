@@ -46,7 +46,7 @@
       <x>540</x>
       <y>230</y>
       <width>350</width>
-      <height>431</height>
+      <height>511</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -296,6 +296,32 @@
      </property>
      <property name="text">
       <string>unrol</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="orbitvButton">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>390</y>
+       <width>99</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>orbitv</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="lookatButton">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>470</y>
+       <width>99</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>lookatrand</string>
      </property>
     </widget>
    </widget>

@@ -416,14 +416,14 @@ void MainWindow::on_randqButton_clicked()
     CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
 
     CsPoint3D tmpgroundpoint =  ground.intersection(&camline);
-    if(abs(tmpgroundpoint.x - groundpoint.x) > 1.0 || abs(tmpgroundpoint.y - groundpoint.y) > 1.0 || abs(tmpgroundpoint.z-groundpoint.z) > 1.0){
+    //if(abs(tmpgroundpoint.x - groundpoint.x) > 1.0 || abs(tmpgroundpoint.y - groundpoint.y) > 1.0 || abs(tmpgroundpoint.z-groundpoint.z) > 1.0){
         groundpoint = tmpgroundpoint;
 
 
         SCN3.camera.unRoll();
         upax = SCN3.camera.rot.conjugated().rotatedVector(QVector3D(0,1,0));
 
-    }
+    //}
 
     QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
             - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
@@ -460,4 +460,55 @@ void MainWindow::on_unrollButton_clicked()
     SCN3.camera.unRoll();
     SCN3.redrawAll();
     refresh();
+}
+
+
+QVector3D rax = QVector3D(1,0,0);
+
+void MainWindow::on_orbitvButton_clicked()
+{
+    QQuaternion random = QQuaternion::fromDirection(QVector3D(0, sin(0.1), cos(0.1)), QVector3D(0,0,0));
+    random = random.normalized();
+
+    QVector3D camdir = QVector3D(0,0,-1);
+    camdir = SCN3.camera.rot.rotatedVector(camdir);
+    CsLine3D camline = CsLine3D(camdir, 0,INFINITY, SCN3.camera.nodalPoint);
+    CsShape2D inf = CsShape2D();
+    CsPlane3D ground = CsPlane3D(QVector3D(0,1,0), 0, inf, orig);
+
+    CsPoint3D tmpgroundpoint =  ground.intersection(&camline);
+
+    groundpoint = tmpgroundpoint;
+
+    SCN3.camera.unRoll();
+    rax = SCN3.camera.rot.rotatedVector(QVector3D(1,0,0));
+
+
+    QVector3D nodalrelground = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z)
+            - QVector3D(SCN3.camera.nodalPoint.x, SCN3.camera.nodalPoint.y, SCN3.camera.nodalPoint.z);
+    random =  QQuaternion::fromAxisAndAngle(rax,-(180/M_PI)*0.1 );
+    nodalrelground = random.rotatedVector(-nodalrelground);
+
+
+    QVector3D nodalv = QVector3D(groundpoint.x, groundpoint.y, groundpoint.z) + nodalrelground;
+    CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+    SCN3.camera.nodalPoint = newNodal;
+
+
+    QQuaternion randomm = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-(180/M_PI)*0.1 );
+
+
+
+    SCN3.camera.rotation(randomm);
+    SCN3.camera.actualizeRays();
+    SCN3.redrawAll();
+    refresh();
+
+    qDebug() << "gp" << groundpoint.x << groundpoint.y << groundpoint.z;
+
+}
+
+void MainWindow::on_lookatButton_clicked()
+{
+
 }

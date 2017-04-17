@@ -13,6 +13,17 @@ CsCamera::CsCamera(CsPoint3D nodpoint, int widthinpixels) {
     generateRays();
 }
 
+void CsCamera::lookAt(CsPoint3D pp){
+    QVector3D nodalv = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+    QVector3D ppv = QVector3D(pp.x, pp.y, pp.z);
+    QVector3D relp = nodalv - ppv;
+    rot = QQuaternion::fromDirection(relp, QVector3D(0,0,0));
+}
+
+void CsCamera::orbit( CsPoint3D orig, float inc, float azi){
+
+}
+
 void CsCamera::unRoll(){
     QVector3D fwd = QVector3D(0,0,1);
     fwd = rot.rotatedVector(fwd);

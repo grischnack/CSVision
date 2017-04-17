@@ -20,6 +20,8 @@ public:
     void actualizeRays();
     void generateRays();
     void unRoll();
+    void orbit(CsPoint3D orig, float inc, float azi);
+    void lookAt(CsPoint3D pp);
 
     QQuaternion rot = QQuaternion(1, 0, 0, 0);
 

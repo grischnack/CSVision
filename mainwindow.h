@@ -70,6 +70,10 @@ private slots:
 
     void on_unrollButton_clicked();
 
+    void on_orbitvButton_clicked();
+
+    void on_lookatButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
