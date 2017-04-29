@@ -17,7 +17,7 @@ public:
     void putLine3d(CsLine3D *lin);
     void putPoint(CsPoint3D *point);
     void redrawPoints();
-    void setPixel(int x, int y, int col);
+    void setPixel(int x, int y, int col, int depth);
     void drawPoint(CsPoint3D* point);
     void redrawLines();
     float calculatePointDist(CsPoint3D* point);
@@ -25,10 +25,11 @@ public:
     float* calculatePointAngle(CsPoint3D* point);
     int* calcualtePoint(CsPoint3D* point);
     void drawLine(CsLine3D *lin);
-    QList<QGenericMatrix<3, 1, int> > calculateLine(CsLine3D *lin);
+    QList<QGenericMatrix<4, 1, int> > calculateLine(CsLine3D *lin);
     void putPlane(CsPlane3D* plan);
-    QList<QGenericMatrix<3, 1, int> > calculatePlane(CsPlane3D* plan);
+    QList<QGenericMatrix<4, 1, int> > calculatePlane(CsPlane3D* plan);
     void drawPlane(CsPlane3D* plan);
+    void redrawPlanes();
 
     QList<float> cartesianToSpherical(float x, float y, float z);
     QList<float> sphericalToCartesian(float r, float inclination, float azimuth);
@@ -45,6 +46,8 @@ public:
     const static int imgh = 300;
 
 
+    QGenericMatrix<imgw, imgh, int> depthmap;
+    QGenericMatrix<imgw, imgh, int> coloredmap;
 
     int pixels[imgw][imgh] = {{1}};
 };

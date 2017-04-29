@@ -8,25 +8,30 @@
 class CsLine3D
 {
 public:
-    CsLine3D(QVector3D dir, float dist, float len, CsPoint3D cent);
+   // CsLine3D(QVector3D dir, float dist, float len, CsPoint3D cent);
+    CsLine3D(QQuaternion r, float dist, float len, CsPoint3D cent);
     CsLine3D();
 
     void pitch(float angle);
     void yaw(float angle);
     void roll(float angle);
+    QVector3D direction() const;
+    QVector3D norm() const;
+    void rotation(QQuaternion q);
 
     float distance;
     float length;
 
-    QVector3D direction = QVector3D( 0, 0, 1);
+    QQuaternion rot = QQuaternion(1,0,0,0);
 
-    QList< QGenericMatrix<3, 1, int> > pixels;
+    QList< QGenericMatrix<4, 1, int> > pixels;
     CsPoint3D center;
+
 };
 
 
 inline uint qHash(const CsLine3D& key){
-    return (uint) abs(key.direction.x()*key.direction.y()*key.direction.z()*key.distance*key.center.x* key.center.y *key.center.z);
+    return (uint) abs(key.rot.x()*key.rot.y()*key.rot.z()*key.distance*key.center.x* key.center.y *key.center.z);
 }
 
 inline bool operator< (const CsLine3D &l1, const CsLine3D &l2){
@@ -36,7 +41,7 @@ inline bool operator< (const CsLine3D &l1, const CsLine3D &l2){
 
 inline bool operator== (const CsLine3D &l1, const CsLine3D &l2){
     return (l1.distance == l2.distance)
-            && (l1.direction == l2.direction)
+            && (l1.rot == l2.rot)
             && (l1.center.x == l2.center.x)
             && (l1.center.y==l2.center.y)
             && (l1.center.z==l2.center.z);

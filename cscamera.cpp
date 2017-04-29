@@ -20,7 +20,59 @@ void CsCamera::lookAt(CsPoint3D pp){
     rot = QQuaternion::fromDirection(relp, QVector3D(0,0,0));
 }
 
-void CsCamera::orbit( CsPoint3D orig, float inc, float azi){
+void CsCamera::orbit( float r, float inc, float azi){
+
+
+    QVector3D camline = QVector3D(0,0,-1);
+    camline = rot.rotatedVector(camline);
+    QVector3D nodalv = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+    QVector3D orbitedv = nodalv + (camline*r);
+
+    QVector3D nodalrelorbitedv = orbitedv - nodalv;
+
+
+    QVector3D upax = QVector3D(0,1,0);
+
+    unRoll();
+    upax = rot.conjugated().rotatedVector(QVector3D(0,1,0));
+
+
+    QQuaternion absolutAzi = QQuaternion::fromDirection(QVector3D( sin(azi),0, cos(azi)), QVector3D(0,0,0));
+    absolutAzi = absolutAzi.normalized();
+    QQuaternion relAzi = QQuaternion::fromAxisAndAngle(upax,(180/M_PI)*azi );
+
+    nodalrelorbitedv = absolutAzi.rotatedVector(-nodalrelorbitedv);
+    nodalv = orbitedv + nodalrelorbitedv;
+    CsPoint3D newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+    nodalPoint = newNodal;
+
+    rotation(relAzi);
+    actualizeRays();
+
+    //_-------------------
+
+    camline = QVector3D(0,0,-1);
+    camline = rot.rotatedVector(camline);
+    nodalv = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+    orbitedv = nodalv + (camline*r);
+    nodalrelorbitedv = orbitedv  - nodalv;
+
+
+    QVector3D rax = QVector3D(1,0,0);
+
+    unRoll();
+
+    rax = rot.rotatedVector(QVector3D(1,0,0));
+    QQuaternion absolutInc = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-(180/M_PI)*inc );
+    QQuaternion relInc =  QQuaternion::fromAxisAndAngle(rax,-(180/M_PI)*inc );
+
+    nodalrelorbitedv = relInc.rotatedVector(-nodalrelorbitedv);
+    nodalv = orbitedv + nodalrelorbitedv;
+    newNodal = CsPoint3D(nodalv.x(), nodalv.y(), nodalv.z());
+    nodalPoint = newNodal;
+
+    rotation(absolutInc);
+    actualizeRays();
 
 }
 
@@ -36,6 +88,15 @@ void CsCamera::unRoll(){
 
 void CsCamera::generateRays(){
 
+    rays.clear();
+    raysOriginal.clear();
+    parallelRays.clear();
+    parallelRaysOriginal.clear();
+
+    planarRays.clear();
+    planarRaysOriginal.clear();
+    parallelPlanarRays.clear();
+    parallelPlanarRaysOriginal.clear();
     //--------------planar rays
 
     for(int i = 0; i < widthInPixels; i++){
@@ -83,9 +144,11 @@ void CsCamera::generateRays(){
 
             QVector3D rayvec = QVector3D(j-widthInPixels/2, i-widthInPixels/2, focallength*widthInPixels);
             rayvec = rayvec.normalized();
-            CsLine3D ray = CsLine3D(rayvec, 0, INFINITY, nodalPoint);
+            QQuaternion rayq = QQuaternion::fromDirection(rayvec, QVector3D(0,0,0));
+            CsLine3D ray = CsLine3D(rayq, 0, INFINITY, nodalPoint);
             raysOriginal.append(ray);
             rays.append(ray);
+            raysInitialRotations.append(rayq.conjugated());
         }
     }
 
@@ -93,12 +156,17 @@ void CsCamera::generateRays(){
 
     for(int i = 0; i < widthInPixels; i++){
         for(int j = 0; j < widthInPixels; j++){
-            QVector3D rayvec = QVector3D(0,0,1);
-            QVector3D offset = QVector3D(j-widthInPixels/2, i-widthInPixels/2,0);
-            QVector3D nodalvec = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
-            QVector3D origvec = nodalvec - offset;
-            CsPoint3D rayorigin = CsPoint3D(origvec.x(), origvec.y(), origvec.z());
-            CsLine3D ray = CsLine3D(rayvec , 0, INFINITY, rayorigin );
+
+
+            QVector3D camdir = QVector3D(0,0,-1);
+            QVector3D raypos = QVector3D(j-widthInPixels/2, i-widthInPixels/2,0);
+            raypos = raypos.normalized();
+            float raydist = sqrt(pow(((j-widthInPixels/2)), 2)+pow((i-widthInPixels/2), 2));
+            QQuaternion rayq = QQuaternion::fromDirection(camdir, raypos);
+            CsLine3D ray = CsLine3D(rayq, raydist, INFINITY, nodalPoint);
+            parallelRaysOriginal.append(ray);
+            parallelRays.append(ray);
+            parallelRaysInitialRotations.append(rayq);
         }
     }
 
@@ -136,14 +204,22 @@ void CsCamera::actualizeRays(){
     for(int i = 0; i < np; i++){
         CsPlane3D tmp = parallelPlanarRaysOriginal.at(i);
         tmp.normal = rot.rotatedVector(tmp.normal);
-      //  QVector3D cam = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
-       // QVector3D plan = QVector3D(tmp.center.x, tmp.center.y, tmp.center.z);
-       // QVector3D rotplan = cam-plan;
-       // rotplan = rot.rotatedVector(rotplan);
-       // rotplan = cam+rotplan;
-       // tmp.center = CsPoint3D(rotplan.x(), rotplan.y(), rotplan.z());
          tmp.center = CsPoint3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
         parallelPlanarRays.append(tmp);
+    }
+
+    rays.clear();
+    int nr = raysOriginal.count();
+
+    for(int i = 0; i < nr; i++){
+        CsLine3D tmp = raysOriginal.at(i);
+        QVector3D rotax;
+        float rotang;
+        rot.getAxisAndAngle(&rotax, &rotang);
+        QQuaternion tmpq = QQuaternion::fromAxisAndAngle(raysInitialRotations.at(i).rotatedVector(rotax), rotang);
+        tmp.rotation(tmpq);
+        rays.append(tmp);
+
     }
 }
 
@@ -163,10 +239,13 @@ void CsCamera::goForward(float val){
 }
 
 void CsCamera::goBackward(float val){
-
-   // focus.z += val * cos(line.theta)*cos(line.phi);
-   // focus.y += val * sin(line.phi)*sin(line.psi);
-   // focus.x += val * sin(line.theta)*sin(line.psi);
-   // line.center = focus;
+    QVector3D pos = QVector3D(nodalPoint.x, nodalPoint.y, nodalPoint.z);
+    QVector3D inc = QVector3D(0, 0, -1);
+    inc = rot.rotatedVector(inc);
+    inc *=val;
+    pos -= inc;
+    nodalPoint.x = pos.x();
+    nodalPoint.y = pos.y();
+    nodalPoint.z = pos.z();
     actualizeRays();
 }

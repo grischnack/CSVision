@@ -20,7 +20,7 @@ public:
     void actualizeRays();
     void generateRays();
     void unRoll();
-    void orbit(CsPoint3D orig, float inc, float azi);
+    void orbit(float r, float inc, float azi);
     void lookAt(CsPoint3D pp);
 
     QQuaternion rot = QQuaternion(1, 0, 0, 0);
@@ -41,6 +41,8 @@ public:
     QList<CsLine3D> rays;
     QList<CsLine3D> parallelRaysOriginal;
     QList<CsLine3D> parallelRays;
+    QList<QQuaternion> raysInitialRotations;
+    QList<QQuaternion> parallelRaysInitialRotations;
 };
 
 #endif // CSCAMERA_H

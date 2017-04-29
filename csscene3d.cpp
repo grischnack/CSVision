@@ -13,15 +13,25 @@ void CsScene3D::clearScreen(){
         for(int j = 0; j < imgh; j++){
                pixels[i][j] = 255;
 
+               depthmap(j,i) = INFINITY;
+               coloredmap(j,i) = 255;
         }
     }
 }
 
 
-void CsScene3D::setPixel(int x, int y, int col){
+void CsScene3D::setPixel(int x, int y, int col, int depth){
 
+    int i = x+(imgw/2);
+    int j = imgh - (y+(imgh/2));
     if(abs(x)<imgw/2 && abs(y)<imgh/2){
-       pixels[x+(imgw/2)][imgh-(y+(imgh/2))] = col;
+
+        if(depth < depthmap(j,i)) {
+
+            depthmap(j,i) = depth;
+            coloredmap(j,i) = col;
+           pixels[i][j] = col;
+        }
     }
 }
 
@@ -30,6 +40,8 @@ void CsScene3D::redrawAll() {
     clearScreen();
     redrawPoints();
     redrawLines();
+    redrawPlanes();
+
 }
 
 
@@ -57,13 +69,36 @@ void CsScene3D::redrawLines(){
         CsLine3D *lin = lines.takeAt(i);
         int nn = lin->pixels.count();
         for (int ii = 0; ii < nn; ii++) {
-            QGenericMatrix<3, 1, int> pix = lin->pixels.at(ii);
+            QGenericMatrix<4, 1, int> pix = lin->pixels.at(ii);
            // setPixel(pix(0,0), pix(0,1), 255);
         }
         drawLine(lin);
         lines.insert(i, lin);
     }
 
+}
+
+void CsScene3D::redrawPlanes(){
+    int n = planes.count();
+
+    qDebug() << n;
+    for(int i = 0; i < n; i++){
+        CsPlane3D *plan = planes.takeAt(i);
+
+        //qDebug() << "a";
+       // int nn = plan->pixels.count();
+
+        //qDebug() << "b" << nn;
+       // for (int ii = 0; ii < nn; ii++) {
+
+            //qDebug() << "c";
+          //  QGenericMatrix<4, 1, int> pix = plan->pixels.at(ii);
+           // setPixel(pix(0,0), pix(0,1), 255);
+        //}
+        qDebug() << "kurvaaaaaaaaaaaaa";
+        drawPlane(plan);
+        planes.insert(i, plan);
+    }
 }
 
 
@@ -214,7 +249,7 @@ void CsScene3D::drawPoint(CsPoint3D *point){
     int rad = round(imgw/dist);
     for(int i = 0; i < rad; i++){
         for(int j = 0; j < rad; j++){
-            setPixel(x+i, y+j, round(dist*(255.0/1000.0)));
+            setPixel(x+i, y+j, round(dist*(255.0/1000.0)),dist);
             int cords[3] =  { x+i, y+j, 0};
 
             point->pixels.append(QGenericMatrix<3, 1, int>(cords));
@@ -224,10 +259,11 @@ void CsScene3D::drawPoint(CsPoint3D *point){
 }
 
 
-QList<QGenericMatrix<3, 1, int> > CsScene3D::calculateLine(CsLine3D *lin){
+QList<QGenericMatrix<4, 1, int> > CsScene3D::calculateLine(CsLine3D *lin){
 
+    int ran = rand()%255;
 
-    QList<QGenericMatrix<3, 1, int> > linPixels;
+    QList<QGenericMatrix<4, 1, int> > linPixels;
         int n = camera.planarRays.count();
         if(camera.curvRectOrt == 3){
             n = camera.parallelPlanarRays.count();
@@ -248,8 +284,9 @@ QList<QGenericMatrix<3, 1, int> > CsScene3D::calculateLine(CsLine3D *lin){
             if(dd>127){
                 dd=255;
             }
-            int coqrds[3] = {xx, yy, dd};
-            linPixels.append(QGenericMatrix<3,1,int>(coqrds));
+            uint coll = qHash(lin)%255;
+            int coqrds[4] = {xx, yy, coll, calculatePointDist(&intersection)};
+            linPixels.append(QGenericMatrix<4,1,int>(coqrds));
 
         }
         return linPixels;
@@ -260,22 +297,22 @@ void CsScene3D::drawLine(CsLine3D *lin){
 
     lin->pixels.clear();
 
-    QList<QGenericMatrix<3, 1, int> > linePixels;
+    QList<QGenericMatrix<4, 1, int> > linePixels;
     linePixels = calculateLine(lin);
 
     int n = linePixels.count();
     for(int i = 0; i < n; i++){
 
-        setPixel(linePixels.at(i)(0,0), linePixels.at(i)(0,1), linePixels.at(i)(0,2));
+        setPixel(linePixels.at(i)(0,0), linePixels.at(i)(0,1), linePixels.at(i)(0,2), linePixels.at(i)(0,3));
 
         lin->pixels.append(linePixels.at(i));
 
     }
 }
 
-QList<QGenericMatrix<3, 1, int> > CsScene3D::calculatePlane(CsPlane3D *plan){
+QList<QGenericMatrix<4, 1, int> > CsScene3D::calculatePlane(CsPlane3D *plan){
 
-    QList<QGenericMatrix<3, 1, int> > planpix;
+    QList<QGenericMatrix<4, 1, int> > planpix;
     int n = camera.rays.count();
     if(camera.curvRectOrt == 3){
         n = camera.parallelRays.count();
@@ -287,12 +324,18 @@ QList<QGenericMatrix<3, 1, int> > CsScene3D::calculatePlane(CsPlane3D *plan){
         } else {
             intersection = plan->intersection(&camera.rays.at(i));
         }
+        float dist = calculatePointsDist(&plan->center, &intersection);
+        if(dist>100){
+            intersection = CsPoint3D(0,0,0);
+        }
         int* coords = calcualtePoint(&intersection);
 
         int xx = coords[0];
         int yy = coords[1];
-        int coqrds[3] = {xx, yy, 0};
-        planpix.append(QGenericMatrix<3,1,int>(coqrds));
+        uint coll = qHash(plan)%255;
+
+        int coqrds[4] = {xx, yy, coll, calculatePointDist(&intersection)};
+        planpix.append(QGenericMatrix<4,1,int>(coqrds));
 
     }
 
@@ -302,5 +345,17 @@ QList<QGenericMatrix<3, 1, int> > CsScene3D::calculatePlane(CsPlane3D *plan){
 
 
 void CsScene3D::drawPlane(CsPlane3D *plan){
-    calculatePlane(plan);
+
+    plan->pixels.clear();
+
+    QList<QGenericMatrix<4, 1, int> > planePixels;
+    planePixels = calculatePlane(plan);
+    int n = planePixels.count();
+    for(int i = 0; i < n; i++){
+
+        setPixel(planePixels.at(i)(0,0), planePixels.at(i)(0,1), planePixels.at(i)(0,2), planePixels.at(i)(0,3));
+
+        plan->pixels.append(planePixels.at(i));
+
+    }
 }

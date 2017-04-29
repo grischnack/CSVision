@@ -5,6 +5,7 @@
 #include "csshape2d.h"
 #include "cspoint3d.h"
 #include "csline3d.h"
+#include "csscene3d.h"
 
 class CsPlane3D
 {
@@ -12,13 +13,14 @@ public:
     CsPlane3D(QVector3D norm, float dist, CsShape2D shap, CsPoint3D cent);
     CsPoint3D intersection(const CsLine3D *lin) const;
     CsLine3D intersection(const CsPlane3D *plan) const;
+    CsPoint3D intersection2(const CsLine3D *lin) const;
 
     QVector3D normal;
     float distance;
     CsShape2D shape;
 
     CsPoint3D center;
-    QList< QGenericMatrix<3, 1, int> > pixels;
+    QList< QGenericMatrix<4, 1, int> > pixels;
 };
 
 
