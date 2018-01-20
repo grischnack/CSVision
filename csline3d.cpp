@@ -24,6 +24,7 @@ void CsLine3D::rotation(QQuaternion q){
 }
 
 
+
 QQuaternion qFactory;
 void CsLine3D::pitch(float angle){
 

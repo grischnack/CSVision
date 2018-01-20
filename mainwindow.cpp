@@ -13,6 +13,9 @@ CsLine3D raystest[100] = {CsLine3D(QQuaternion(), 0, 300, orig)};
 QQuaternion raysq[100] = {QQuaternion()};
 CsLine3D raystest2[100] = {CsLine3D(QQuaternion(), 0, 300, orig)};
 QQuaternion raysq2[100] = {QQuaternion()};
+CsPlane3D raystest3horiz[50] = {CsPlane3D()};
+CsPlane3D raystest3vertic[50] = {CsPlane3D()};
+QQuaternion raysq3[100] = {QQuaternion()};
 CsScene3D SCN3 = CsScene3D();
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -83,6 +86,28 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     }
 
+    CsPoint3D raytestnod3 = CsPoint3D(1000,500,500);
+
+    for(int i = 0; i < 50; i++){
+
+        QVector3D norm = QVector3D(0, 50, i-(50/2));
+        norm = norm.normalized();
+        CsShape2D infinitshape;
+        int nuls[4] = {0,0,0,0};
+
+        CsPoint3D origo = CsPoint3D(0,0,0);
+        CsPlane3D planarRay = CsPlane3D(norm, 0, infinitshape, raytestnod3);
+
+        raystest3horiz[i] = planarRay;
+
+
+
+        norm = QVector3D(50,  0,  i-(50/2));
+        norm = norm.normalized();
+        planarRay = CsPlane3D(norm, 0, infinitshape, raytestnod3);
+        raystest3vertic[i] = planarRay;
+
+    }
 
     ui->setupUi(this);
 
@@ -143,8 +168,18 @@ void MainWindow::on_initButton_clicked()
        // SCN3.putPoint(&ponts[i]);
     }
     for(int i = 0; i < 100; i++){
-        SCN3.putLine3d(&raystest[i]);
-        SCN3.putLine3d(&raystest2[i]);
+        //SCN3.putLine3d(&raystest[i]);
+        //SCN3.putLine3d(&raystest2[i]);
+    }
+    for(int i = 0; i < 50; i++){
+        for(int j = 0; j < 50; j++){
+            CsLine3D lini = raystest3horiz[i].intersection(&raystest3vertic[j]);
+            lini.length = 200.0;
+            QVector3D vvv = lini.rot.rotatedVector(QVector3D(0,0,1));
+
+            qDebug() << "liniii: "  << vvv << lini.center.x << lini.center.y << lini.center.z;
+            SCN3.putLine3d(&lini);
+        }
     }
     SCN3.putLine3d(&longiy);
     SCN3.putPlane(&pp);
@@ -484,4 +519,19 @@ void MainWindow::on_pushButton_6_clicked()
     }
     SCN3.redrawAll();
     refresh();
+}
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    CsPlane3D p1 = CsPlane3D(QVector3D(1,0,0), 100, CsShape2D(), CsPoint3D(0,0,0));
+    CsPlane3D p2 = CsPlane3D(QVector3D(0,1,0),  100, CsShape2D(), CsPoint3D(100,100,100));
+    CsLine3D ll = p1.intersection(&p2);
+    QVector3D camline = QVector3D(0,0,-1);
+    QVector3D camupline = QVector3D(0,1,0);
+    camline = ll.rot.rotatedVector(camline);
+    camupline = ll.rot.rotatedVector(camupline);
+    qDebug() << "eleree" << camline << ll.distance;
+    qDebug() << "feleee" << camupline;
+
+
 }

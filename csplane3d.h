@@ -5,15 +5,16 @@
 #include "csshape2d.h"
 #include "cspoint3d.h"
 #include "csline3d.h"
-#include "csscene3d.h"
 
 class CsPlane3D
 {
 public:
     CsPlane3D(QVector3D norm, float dist, CsShape2D shap, CsPoint3D cent);
+    CsPlane3D();
     CsPoint3D intersection(const CsLine3D *lin) const;
     CsLine3D intersection(const CsPlane3D *plan) const;
     CsPoint3D intersection2(const CsLine3D *lin) const;
+    float calculatePointsDist(CsPoint3D const *p1, CsPoint3D const *p2) const;
 
     QVector3D normal;
     float distance;
